@@ -1,0 +1,44 @@
+[versions]
+adventure = "4.17.0"
+coroutines = "1.10.2"
+dokka = "2.0.0"
+kache = "2.1.1"
+kotlin = "2.2.20"
+paper = "1.21.8-R0.1-SNAPSHOT"
+serialization = "1.9.0"
+
+project = "1.0.0-SNAPSHOT"
+
+[libraries]
+# STL
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+
+
+# COROUTINES
+coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+
+
+# SERIALIZATION
+serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+serialization-hocon = { module = "org.jetbrains.kotlinx:kotlinx-serialization-hocon", version.ref = "serialization" }
+
+
+# MINECRAFT
+adventure = { module = "net.kyori:adventure-api", version.ref = "adventure" }
+paper = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
+
+
+# KACHE
+kache = { module = "com.mayakapps.kache:kache", version.ref = "kache" }
+
+[bundles]
+kotlin = ["kotlin-stdlib", "kotlin-reflect"]
+minecraft = ["adventure", "paper"]
+serialization = ["serialization-json", "serialization-hocon"]
+
+
+[plugins]
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
