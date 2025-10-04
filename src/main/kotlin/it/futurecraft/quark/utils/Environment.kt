@@ -18,27 +18,50 @@
 
 package it.futurecraft.quark.utils
 
+/**
+ * Utility object to manage server environment.
+ */
 object Environment {
-    val environment: Type by lazy {
-        Type.from(System.getProperty("environment"))
-    }
+    private val _props by lazy { System.getProperties() }
 
+    /**
+     * The current environment type, determined by the "environment" system property.
+     */
+    val environment: Type =
+        Type.from(_props.getProperty("environment", "production"))
+
+    /**
+     * Indicates if the current environment is development.
+     */
     val development: Boolean
         get() = environment == Type.DEVELOPMENT
 
+    /**
+     * Indicates if the current environment is production.
+     */
     val production: Boolean
         get() = environment == Type.PRODUCTION
 
+    /**
+     * The server software type.
+     */
+    val software: MinecraftSoftware by lazy {
+        MinecraftSoftware.get()
+    }
+
+    /**
+     * Enumeration of possible environment types.
+     * - DEVELOPMENT: Represents a development environment.
+     * - PRODUCTION: Represents a production environment.
+     */
     enum class Type {
         DEVELOPMENT,
-        PRODUCTION,
-        UNKNOWN;
+        PRODUCTION;
 
         companion object {
             fun from(value: String): Type = when(value.lowercase()) {
                 "development" -> DEVELOPMENT
-                "production" -> PRODUCTION
-                else -> UNKNOWN
+                else -> PRODUCTION
             }
         }
     }

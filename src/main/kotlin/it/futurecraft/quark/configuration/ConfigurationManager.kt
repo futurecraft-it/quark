@@ -50,7 +50,7 @@ class ConfigurationManager(private val _plugin: Quark) {
         val path = _plugin.dataPath / key.file.path
         val serializer = key.file.serializer
 
-        val formatter = key.file.formatter()
+        val formatter = key.file.format.formatter
 
         path.file.run {
             if (!exists) parentFile.mkdirs()
@@ -73,7 +73,7 @@ class ConfigurationManager(private val _plugin: Quark) {
             val path = _plugin.dataPath / k.file.path
             val serializer = k.file.serializer
 
-            val formatter = k.file.formatter()
+            val formatter = k.file.format.formatter
 
             path.file.run { formatter.deserialize(this, serializer) }
         }
