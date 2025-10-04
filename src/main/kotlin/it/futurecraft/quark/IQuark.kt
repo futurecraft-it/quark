@@ -69,6 +69,15 @@ interface IQuark : Plugin {
     ): Job
 
     /**
+     * Schedules a coroutine to run on the server main thread.
+     *
+     * @param block The suspend function to execute.
+     * @return A [Job] representing the scheduled coroutine.
+     */
+    fun schedule(block: suspend CoroutineScope.() -> Unit): Job =
+        launch(ctx = MinecraftDispatcher, block = block)
+
+    /**
      * Schedules a coroutine to run after a specified delay on server main thread.
      *
      * @param delay The delay in ticks before executing the block.
