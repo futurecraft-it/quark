@@ -28,6 +28,9 @@ import kotlinx.serialization.json.decodeFromStream
 import java.io.File
 
 @OptIn(ExperimentalSerializationApi::class)
+/**
+ * Formatter implementation for JSON (JavaScript Object Notation) format.
+ */
 object JsonFormatter : Formatter() {
     override val format: SerialFormat
         get() = _json

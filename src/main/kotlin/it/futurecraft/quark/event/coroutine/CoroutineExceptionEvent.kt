@@ -16,16 +16,31 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.futurecraft.quark.coroutines
+package it.futurecraft.quark.event.coroutine
 
 import it.futurecraft.quark.Quark
-import it.futurecraft.quark.event.coroutine.CoroutineExceptionEvent
-import kotlinx.coroutines.CoroutineExceptionHandler
+import org.bukkit.event.Cancellable
+import org.bukkit.event.HandlerList
+import org.bukkit.event.server.ServerEvent
 
-fun ExceptionHandler(plugin: Quark) = CoroutineExceptionHandler { _, exception ->
-    val event = CoroutineExceptionEvent(plugin, exception)
+class CoroutineExceptionEvent(
+    val plugin: Quark,
+    val exception: Throwable
+) : ServerEvent(false), Cancellable {
+    companion object {
+        private val HANDLERS = HandlerList()
 
-    if (plugin.isEnabled) {
-        plugin.server.scheduler.runTask(plugin, Runnable { event.callEvent() })
+        @JvmStatic
+        fun getHandlerList() = HANDLERS
     }
+
+    private var _cancelled = false
+
+    override fun isCancelled(): Boolean = _cancelled
+
+    override fun setCancelled(cancel: Boolean) {
+        _cancelled = cancel
+    }
+
+    override fun getHandlers() = HANDLERS
 }

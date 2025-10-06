@@ -25,6 +25,9 @@ import kotlinx.serialization.hocon.Hocon
 import java.io.File
 
 @OptIn(ExperimentalSerializationApi::class)
+/**
+ * Formatter implementation for HOCON (Human-Optimized Config Object Notation) format.
+ */
 object HoconFormatter : Formatter() {
     override val format: SerialFormat
         get() = _hocon

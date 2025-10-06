@@ -26,8 +26,18 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.io.path.div
 
+/**
+ * Manages configuration files for the plugin.
+ * Files are cached in memory to minimize disk I/O and updates are only written when necessary.
+ */
 class ConfigurationManager(private val _plugin: Quark) {
     private val _cache = ConcurrentHashMap<File.Key<*>, File.Schema>()
+
+    /**
+     * Indicates whether the file cache is empty.
+     */
+    val empty: Boolean
+        get() = _cache.isEmpty()
 
     /**
      * Saves the file data to disk if it has changed.
