@@ -18,11 +18,15 @@
 
 package it.futurecraft.quark.extensions
 
+import it.futurecraft.quark.Quark
 import it.futurecraft.quark.coroutines.dispatchers.DelayedDispatcher
 import it.futurecraft.quark.coroutines.dispatchers.IntervalDispatcher
 import it.futurecraft.quark.coroutines.dispatchers.MinecraftDispatcher
 import it.futurecraft.quark.utils.MinecraftVersion
+import org.bukkit.event.Event
+import org.bukkit.event.EventPriority
 import org.bukkit.plugin.Plugin
+import it.futurecraft.quark.event.listen as _listen
 
 val Plugin.ServerVersion: MinecraftVersion
     get() {
@@ -38,3 +42,17 @@ val Plugin.IntervalDispatcher: IntervalDispatcher
 
 val Plugin.MinecraftDispatcher: MinecraftDispatcher
     get() = MinecraftDispatcher(this)
+
+/**
+ * Creates a new listener for the given event type and registers it to this plugin.
+ *
+ * @param T The type of event to listen for.
+ * @param priority The priority of the listener.
+ * @param ignoreCancelled Whether to ignore cancelled events.
+ * @param block The block to execute when the event is fired.
+ */
+inline fun <reified T : Event> Quark.listen(
+    priority: EventPriority = EventPriority.NORMAL,
+    ignoreCancelled: Boolean = false,
+    crossinline block: suspend T.() -> Unit
+) = _listen<T>(priority, ignoreCancelled, block).also { it.register(this) }
