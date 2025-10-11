@@ -19,27 +19,34 @@
 package it.futurecraft.quark.event
 
 import it.futurecraft.quark.Quark
+import it.futurecraft.quark.coroutines.dispatchers.MinecraftDispatcher
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
-import org.bukkit.event.Listener
+import org.bukkit.event.HandlerList
 import org.bukkit.plugin.EventExecutor
+import org.bukkit.plugin.Plugin
+import org.bukkit.event.Listener as BukkitListener
 
 /**
  * Creates a new listener for the given event type.
  *
  * @param T The type of event to listen for.
- * @param plugin The plugin instance.
  * @param priority The priority of the listener.
  * @param ignoreCancelled Whether to ignore cancelled events.
  * @param block The block to execute when the event is fired.
  */
 inline fun <reified T : Event> listen(
-    plugin: Quark,
     priority: EventPriority = EventPriority.NORMAL,
     ignoreCancelled: Boolean = false,
-    crossinline block: T.() -> Unit
+    crossinline block: suspend T.() -> Unit
 ): Listener = object : Listener, EventExecutor {
-    init {
+    private lateinit var _plugin: Quark
+
+    override fun register(plugin: Quark) {
+        _plugin = plugin
+
         plugin.server.pluginManager.registerEvent(
             T::class.java,
             this,
@@ -50,21 +57,25 @@ inline fun <reified T : Event> listen(
         )
     }
 
-    override fun execute(listener: Listener, event: Event) {
-        if (event is T) event.block()
+    override fun unregister() = HandlerList.unregisterAll(this)
+
+    override fun execute(listener: BukkitListener, event: Event) {
+        if (event is T) _plugin.schedule { event.block() }
     }
 }
 
 /**
- * Creates a new listener for the given event type.
- *
- * @param T The type of event to listen for.
- * @param priority The priority of the listener.
- * @param ignoreCancelled Whether to ignore cancelled events.
- * @param block The block to execute when the event is fired.
+ * A listener for a specific event type.
+ * This interface extends Bukkit's Listener and provides methods to register and unregister the listener.
  */
-inline fun <reified T : Event> Quark.listen(
-    priority: EventPriority = EventPriority.NORMAL,
-    ignoreCancelled: Boolean = false,
-    crossinline block: T.() -> Unit
-) = listen(this, priority, ignoreCancelled, block)
+interface Listener : BukkitListener {
+    /**
+     * Registers this listener for the given plugin.
+     */
+    fun register(plugin: Quark)
+
+    /**
+     * Unregisters this listener from all events.
+     */
+    fun unregister()
+}

@@ -1,0 +1,31 @@
+# .github/workflows/publish.yml
+
+name: Publish
+on:
+  release:
+    types: [ released, prereleased ]
+jobs:
+  publish:
+    name: Build and Publish
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v5
+
+      - name: Publish to MavenCentral
+        run: ./gradlew publishToMavenCentral --no-configuration-cache
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OSSHR_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OSSHR_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEYID }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
