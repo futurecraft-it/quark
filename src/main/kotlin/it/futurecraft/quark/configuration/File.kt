@@ -113,5 +113,7 @@ class File<S : File.Schema>(
      * @param S The schema type associated with the key.
      * @param file The configuration file to which this key belongs.
      */
-    abstract class Key<S : Schema>(val file: File<S>)
+    abstract class Key<S : Schema>(val file: File<S>) {
+        abstract val default: S
+    }
 }

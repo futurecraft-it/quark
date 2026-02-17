@@ -25,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.io.path.div
+import kotlin.io.path.exists
 
 /**
  * Manages configuration files for the plugin.
@@ -91,6 +92,29 @@ class ConfigurationManager(private val _plugin: Quark) {
         schema as S
     }
 
+    /**
+     * Saves the default value of the file if it doesn't exist.
+     * @param key The file key.
+     * @return true if the file has been created, false otherwise
+     */
+    suspend fun <S : File.Schema> default(key: File.Key<S>): Boolean = withContext(Dispatchers.IO) {
+        val path = _plugin.dataPath / key.file.path
+        val serializer = key.file.serializer
+        val formatter = key.file.format.formatter
+
+        path.file.run {
+            if (exists) return@run false
+
+            parentFile.mkdirs()
+
+            _cache[key] = key.default
+
+            val content = formatter.serialize(key.default, serializer)
+            writeText(content)
+
+            return@run true
+        }
+    }
 
     /**
      * Clears the configuration cache.
