@@ -19,6 +19,7 @@
 package it.futurecraft.quark.configuration.formatters
 
 import com.typesafe.config.ConfigFactory
+import com.typesafe.config.ConfigRenderOptions
 import it.futurecraft.quark.configuration.Formatter
 import kotlinx.serialization.*
 import kotlinx.serialization.hocon.Hocon
@@ -36,7 +37,7 @@ object HoconFormatter : Formatter() {
 
     override fun <T> serialize(data: T, serializer: SerializationStrategy<T>): String {
         val config = _hocon.encodeToConfig(serializer, data)
-        return config.root().render()
+        return config.root().render(ConfigRenderOptions.concise().setFormatted(true).setJson(false))
     }
 
 
