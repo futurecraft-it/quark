@@ -19,7 +19,8 @@
 package it.futurecraft.quark.coroutines.dispatchers
 
 import it.futurecraft.quark.coroutines.elements.Timing
-import it.futurecraft.quark.extensions.timing
+import it.futurecraft.quark.extensions.delay
+import it.futurecraft.quark.extensions.interval
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Runnable
 import org.bukkit.plugin.Plugin
@@ -32,8 +33,8 @@ open class IntervalDispatcher(private val _plugin: Plugin) : CoroutineDispatcher
     override fun dispatch(context: CoroutineContext, block: Runnable) {
         if (!_plugin.isEnabled) return
 
-        val (delay) = context[Timing] ?: 0L.timing
-        val (period) = context[Timing] ?: 20L.timing
+        val (delay) = context[Timing.Delay] ?: 0L.delay
+        val (period) = context[Timing.Interval] ?: 20L.interval
 
         _plugin.server.scheduler.runTaskTimer(_plugin, block, delay, period)
     }

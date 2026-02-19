@@ -1,6 +1,6 @@
 /*
  *     quark
- *     Copyright (C) 2025  FUTURECRAFT
+ *     Copyright (C) 2026  FUTURECRAFT
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as published
@@ -16,25 +16,24 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.futurecraft.quark.coroutines.dispatchers
+package it.futurecraft.quark.coroutines.elements
 
-import it.futurecraft.quark.coroutines.elements.Timing
-import it.futurecraft.quark.extensions.delay
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Runnable
-import org.bukkit.plugin.Plugin
+import java.util.concurrent.ConcurrentLinkedQueue
+import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
-open class DelayedDispatcher(private val _plugin: Plugin) : CoroutineDispatcher() {
-    override fun isDispatchNeeded(context: CoroutineContext): Boolean =
-        _plugin.isEnabled && !_plugin.server.isPrimaryThread
+class TaskQueue : AbstractCoroutineContextElement(TaskQueue), Runnable {
+    companion object Key : CoroutineContext.Key<TaskQueue>
 
-    override fun dispatch(context: CoroutineContext, block: Runnable) {
-        if (!_plugin.isEnabled) return
+    private val _queue = ConcurrentLinkedQueue<Runnable>()
 
-        val (delay) = context[Timing.Delay] ?: 0L.delay
+    fun add(runnable: Runnable) {
+        _queue.add(runnable)
+    }
 
-        _plugin.server.scheduler.runTaskLater(_plugin, block, delay)
+    override fun run() {
+        if (_queue.isEmpty()) return
+
+        _queue.poll().run()
     }
 }
-

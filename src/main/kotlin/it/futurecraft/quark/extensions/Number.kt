@@ -28,10 +28,16 @@ val Int.ticks: Long
     get() = this / 50L
 
 /**
- * Create a [Timing] instance from a [Long] value representing milliseconds or ticks.
+ * Create a [Timing.Delay] instance from a [Long] value representing milliseconds or ticks.
  */
-val Long.timing
-    get() = Timing(this)
+val Long.delay
+    get() = Timing.Delay(this)
+
+/**
+ * Create a [Timing.Interval] instance from a [Long] value representing milliseconds or ticks.
+ */
+val Long.interval
+    get() = Timing.Interval(this)
 
 /**
  * Whether the number is positive.

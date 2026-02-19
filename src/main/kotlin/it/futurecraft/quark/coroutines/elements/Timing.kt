@@ -21,6 +21,14 @@ package it.futurecraft.quark.coroutines.elements
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
-data class Timing(val timing: Long) : AbstractCoroutineContextElement(Timing) {
-    companion object Key : CoroutineContext.Key<Timing>
+interface Timing {
+    val timing: Long
+
+    data class Delay(override val timing: Long) : AbstractCoroutineContextElement(Delay), Timing {
+        companion object Key : CoroutineContext.Key<Delay>
+    }
+
+    data class Interval(override val timing: Long) : AbstractCoroutineContextElement(Interval), Timing {
+        companion object Key : CoroutineContext.Key<Interval>
+    }
 }

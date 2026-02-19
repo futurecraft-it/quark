@@ -18,6 +18,7 @@
 
 package it.futurecraft.quark.coroutines.dispatchers
 
+import it.futurecraft.quark.coroutines.elements.TaskQueue
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Runnable
 import org.bukkit.plugin.Plugin
@@ -30,6 +31,13 @@ open class MinecraftDispatcher(private val _plugin: Plugin) : CoroutineDispatche
     override fun dispatch(context: CoroutineContext, block: Runnable) {
         if (_plugin.isEnabled) return
 
-        _plugin.server.scheduler.runTask(_plugin, block)
+        val queue = context[TaskQueue]
+
+        if (queue == null) {
+            _plugin.server.scheduler.runTask(_plugin, block)
+        } else {
+            queue.add(block)
+            _plugin.server.scheduler.runTask(_plugin, queue)
+        }
     }
 }

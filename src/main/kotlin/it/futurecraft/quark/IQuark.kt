@@ -18,10 +18,7 @@
 
 package it.futurecraft.quark
 
-import it.futurecraft.quark.extensions.DelayedDispatcher
-import it.futurecraft.quark.extensions.IntervalDispatcher
-import it.futurecraft.quark.extensions.MinecraftDispatcher
-import it.futurecraft.quark.extensions.timing
+import it.futurecraft.quark.extensions.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
@@ -85,7 +82,7 @@ interface IQuark : Plugin {
      * @return A [Job] representing the scheduled coroutine.
      */
     fun delay(delay: Long, block: suspend CoroutineScope.() -> Unit): Job =
-        launch(ctx = DelayedDispatcher + delay.timing, block = block)
+        launch(ctx = DelayedDispatcher + delay.delay, block = block)
 
 
     /**
@@ -96,5 +93,5 @@ interface IQuark : Plugin {
      * @param block The suspend function to execute at each interval.
      */
     fun repeat(delay: Long = 0, period: Long, block: suspend CoroutineScope.() -> Unit): Job =
-        launch(ctx = IntervalDispatcher + delay.timing + period.timing, block = block)
+        launch(ctx = IntervalDispatcher + delay.delay + period.interval, block = block)
 }
